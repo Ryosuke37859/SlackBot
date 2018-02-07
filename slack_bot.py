@@ -94,7 +94,7 @@ class SlackHandler():
             for command, description in [x.values() for x in self.commands]:
                 if user_command == command.lower():
                     response = "Running command..."
-                break
+                    break
         
         return response
     
