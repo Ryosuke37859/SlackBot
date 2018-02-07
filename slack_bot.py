@@ -1,3 +1,5 @@
+#! /usr/bin/env Python3
+
 import os
 import time
 import re
@@ -5,7 +7,7 @@ from slackclient import SlackClient
 
 
 class SlackHandler():
-    def __init__(self, token, commands):
+    def __init__(self, token, commands, exact=True):
         # instantiate Slack client
         self._client = SlackClient(token)
         self._mention_regex = "^<@(|[WU].+?)>(.*)"
@@ -17,6 +19,7 @@ class SlackHandler():
         self.default_response = "Not sure what you mean. Try *{}*.".format("help")
         self.command_out = []
         self.command_in = []
+        self.exact_match = exact
     
     
     def start(self):
@@ -91,10 +94,19 @@ class SlackHandler():
                 response += "\n*%s*:" % command
                 response += "\n%s\n" % description
         else:
-            for command, description in [x.values() for x in self.commands]:
-                if user_command == command.lower():
-                    response = "Running command..."
-                    break
+            # Exact Match, default
+            if self.exact_match:
+                for command, description in [x.values() for x in self.commands]:
+                    if user_command == command.lower():
+                        response = "Running command..."
+                        break
+            # Longest Match first, pay extra attention to command order and validation if using this
+            # This allows for passing arguments after the command string
+            else: 
+                for command, description in [x.values() for x in self.commands]:
+                    if command.lower() in user_command:
+                        response = "Running command..."
+                        break
         
         return response
     
