@@ -20,12 +20,18 @@ class SlackHandler():
         self.command_out = []
         self.command_in = []
         self.exact_match = exact
+        self.channel_list = None
     
     
     def start(self):
         self._client.rtm_connect(with_team_state=False)
         self._id = self._client.api_call("auth.test")["user_id"]
 
+    def get_channel_list(self):
+        """ Gets information for channels """
+        response = self._client.api_call("channels.list", exclude_archived=True, exclude_members=True)
+        if response["ok"]:
+            self.channel_list = response["channels"]
 
     def parse_direct_mention(self, message_text):
         """
@@ -192,6 +198,12 @@ if __name__ == "__main__":
     client = SlackHandler(token=token, commands=commands)
     client.start()
     print("Starter Bot connected and running!")
+    client.get_channel_list()
+    print("Channels:")
+    for channel in client.channel_list:
+        print("\t%s" % channel["name"])
+    
+    print("Parsing commands")
     while True:
         client.parse_bot_commands()
         client.process_command_in()
