@@ -57,38 +57,36 @@ class SlackHandler():
         """
             Sends a message to a Slack Channel
         """
-        self._client.api_call(
+        
+        return self._client.api_call(
             "chat.postMessage",
             channel=channel,
             text=message)
-        return True
     
     
     def send_ephemeral_message(self, channel, user, message):
         """
             Sends Ephemeral Message to user
         """
-        self._client.api_call(
+        
+        return self._client.api_call(
             "chat.postEphemeral",
             channel=channel,
             text=message,
             user=user)
-        return True
         
         
     def reply(self, channel, thread_ts, message):
         """
             Sends Reply to thread
         """
-        if self._client.api_call(
+        
+        return self._client.api_call(
             "chat.postMessage",
             channel=channel,
             text=message,
-            thread_ts=thread_ts):
-            return True
-        else:
-            return False
-    
+            thread_ts=thread_ts)
+            
     
     def match_command(self, user_command):
         """ Matches command and creates a response"""
